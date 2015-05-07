@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>pyszsnn</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.python.pydev.PyDevBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.python.pydev.pythonNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/pyszsnn/testy/n_IZ_n_CONST.py</name>
+			<type>1</type>
+			<location>/home/pawel/Studia/PDI/SZSNN/pyszsnn/src/pyszsnn/testy/n_IZ_n_CONST.py</location>
+		</link>
+	</linkedResources>
+</projectDescription>

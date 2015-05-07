@@ -1,0 +1,205 @@
+'''
+Created on 16-01-2013
+
+@author: pawel
+'''
+
+from brian import Connection, DelayConnection, units, SpikeGeneratorGroup
+from brian.monitor import SpikeMonitor, StateMonitor
+from brian.neurongroup import NeuronGroup
+
+
+def saveIzhikevichNGToFile(ngroup, IDOffset, filename, label=""):
+    '''
+    kolejnosc:
+    Izhikevich
+    [size]
+    [firstID -> IDOffset]
+    [label]
+    a[ms] b[ms] c[mV] d[mV/ms]
+    v[mV] u[mV/ms] 
+    '''
+    if not isinstance(ngroup, NeuronGroup):
+        raise TypeError("argument must be brian Population")
+
+    size = len(ngroup)
+    with open(filename+".pop", 'w') as f:
+        f.write("# population saved by pyszsnn.brian"+
+            "dumper.saveIzhikevichNGToFile\n")
+        f.write("Izhikevich\n") # label
+        f.write(str(size)+"\n") 
+        f.write(str(size)+"\n")    # size
+        f.write(str(IDOffset)+"\n")
+        for n in range(0, size):
+            f.write(str(ngroup[n].a[0]/units.msecond)+" ")  
+            f.write(str(ngroup[n].b[0]/units.msecond)+" ") 
+            f.write(str(ngroup[n].c[0]/units.mvolt)+" ") 
+            f.write(str(ngroup[n].d[0]/units.mvolt * units.msecond)+"\n")
+
+            f.write(str(ngroup[n].v[0]/units.mvolt)+" ")  
+            f.write(str(ngroup[n].u[0]/units.mvolt * units.msecond)+"\n")         
+        f.close()
+
+def saveIzhikevichTemplateNGToFile(size, IDOffset, filename, 
+        a= 0.02, b=0.2, c=-65, d=2, v=0, u=0,  label=""):
+    '''
+    kolejnosc:
+    Izhikevich
+    [size]
+    [firstID -> IDOffset]
+    [label]
+    a[ms] b[ms] c[mV] d[mV/ms]
+    v[mV] u[mV/ms] 
+    '''
+
+    with open(filename, 'w') as f:
+        f.write("# population template saved by pyszsnn.brian "+
+                "dumper.saveIzhikevichTemplateNGToFile\n")
+        f.write("# Izhikevich\n") # neuron type
+        f.write(label+"\n")
+        f.write(str(size)+"\n")    # size
+        f.write(str(IDOffset)+"\n")
+        f.write(str(a)+" ")  
+        f.write(str(b)+" ") 
+        f.write(str(c)+" ") 
+        f.write(str(d)+"\n")
+
+        f.write(str(v)+" ")  
+        f.write(str(u)+"\n")         
+        f.close() 
+
+def saveIF_curr_expTemplateNGToFile(size, IDOffset, filename, 
+        v_rest=-65, cm=1, tau_m=20, tau_refrac=0, tau_syn_e=5, 
+        tau_syn_i=5,  i_offset=0, v_reset=-65, v_thresh=-65, v=0, label=""):
+    '''
+    kolejnosc:
+    Izhikevich
+    [size]
+    [firstID -> IDOffset]
+    [label]
+    v_rest[mV] cm[nF] tau_m[ms] tau_refrac[ms] tau_syn_e[ms] tau_syn_i[ms] i_offset[nA] v_reset[mV] v_thresh[mV]
+    v[mV] 
+    '''
+
+    with open(filename, 'w') as f:
+        f.write("# population template saved by pyszsnn.brian "+
+                "dumper.saveIzhikevichTemplateNGToFile\n")
+        f.write("# Izhikevich\n") # neuron type
+        f.write(label+"\n")
+        f.write(str(size)+"\n")    # size
+        f.write(str(IDOffset)+"\n")
+        f.write(str(v_rest)+" ")  
+        f.write(str(cm)+" ") 
+        f.write(str(tau_m)+" ")
+        f.write(str(tau_refrac)+" ")
+        f.write(str(tau_syn_e)+" ")
+        f.write(str(tau_syn_i)+" ")
+        f.write(str(i_offset)+" ")
+        f.write(str(v_reset)+" ")
+        f.write(str(v_thresh)+"\n")
+
+        f.write(str(v)+" ")
+        f.write(str(0)+" ")
+        f.write(str(0)+" ")
+        f.write(str(100000)+"\n")       
+        f.close() 
+
+def savePoissonTemplateNGToFile(size, IDOffset, filename, 
+        rate,label=""):
+    '''
+    kolejnosc:
+    Izhikevich
+    [size]
+    [firstID -> IDOffset]
+    [label]
+    v_rest[mV] cm[nF] tau_m[ms] tau_refrac[ms] tau_syn_e[ms] tau_syn_i[ms] i_offset[nA] v_reset[mV] v_thresh[mV]
+    v[mV] 
+    '''
+
+    with open(filename, 'w') as f:
+        f.write("# population template saved by pyszsnn.brian "+
+                "dumper.savePoissonTemplateNGToFile\n")
+        f.write("# Poisson\n") # neuron type
+        f.write(label+"\n")
+        f.write(str(size)+"\n")    # size
+        f.write(str(IDOffset)+"\n")
+        f.write(str(rate)+"\n")  
+        f.close() 
+
+
+def createConstSpikeGenTemplateNGAndSaveToFile(size, IDOffset, filename, rate,
+        start=0, stop=1000, label=""):
+    spikes = range(start, stop, rate);
+    
+    spiketimes = []
+    NI = size
+    for n in range(0, NI):
+        for i in spikes: 
+            spiketimes.append((n, i*units.msecond));
+    
+    with open(filename, 'w') as f:
+        f.write("# population template saved by pyszsnn.brian"+
+            "dumper.createConstSpikeGenTemplateNGAndSaveToFile\n")
+        f.write("# Const_rate\n") # neuron type
+        f.write(label+"\n")
+        f.write(str(size)+"\n")    # size
+        f.write(str(IDOffset)+"\n")
+        f.write(str(rate)+"\n")  
+        f.write(str(start)+"\n")
+        f.close()
+    return spiketimes
+
+
+def saveConnectionToFile(connection, multiplier, sourceIDOffset, targetIDOffset, filename, delay_add=0):
+    if not isinstance(connection, Connection):
+        raise TypeError("argument must be brian Connection")
+
+    isConstDelay = False
+    constDelay = 0
+    if not isinstance(connection, DelayConnection):
+        isConstDelay = True
+        constDelay = connection.delay
+
+    fromSize = len(connection.source)
+    fromStart = connection.source._origin + sourceIDOffset
+    toSize = len(connection.target)
+    toStart = connection.target._origin + targetIDOffset
+    #startID = connection.source
+ 
+    connSaved = 0
+    conn10000Count = 0
+    with open(filename, 'w') as f:
+        f.write("# source: "+str(connection.source)+"\n")
+        f.write("# target: "+str(connection.target)+"\n")
+        for con_source in range(0, fromSize):
+            for con_target in range(0, toSize):
+                if connection[con_source, con_target] != 0:
+                    delay = constDelay + delay_add
+                    if not isConstDelay:
+                        delay = connection.delay[con_source, con_target] + delay_add
+                    sourceID = fromStart + con_source
+                    targetID = toStart + con_target
+                    weigth = connection[con_source, con_target]*multiplier
+                    f.write(str(sourceID)+"\t"+str(targetID)+"\t"+str(weigth)+"\t"+str(delay)+"\n")
+                    connSaved += 1
+                    if ((connSaved % 10000) == 0):
+                        conn10000Count += 1 
+                        print "[",str(conn10000Count),"] saving next 10000"
+                        f.flush()
+        f.close()
+    return connSaved
+
+def saveInputsConnectionToFile(connection, multiplier, targetOffset, filename, delay_add=0):
+    saveConnectionToFile(connection, multiplier, 0, targetOffset, filename, delay_add)
+    
+def saveSpikesToFile(spikeMonitor, filename, label=""):
+    if not isinstance(spikeMonitor, SpikeMonitor):
+        raise TypeError("argument must be brian SpikeMonitor")
+    
+    with open(filename, 'w') as f:
+        f.write("# spikes saved by saveSpikesToFile\n")
+        f.write("# "+label+"\n")
+        for n in spikeMonitor.spiketimes:
+            for t in spikeMonitor[n]:
+                f.write(str(t * 1000)+"\t"+str(n)+"\n")
+    
